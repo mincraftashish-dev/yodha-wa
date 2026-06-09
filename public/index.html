@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yodha WA Toolkit - Direct Chat Without Saving Number</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      color: #00ff41;
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+    }
+    .container { max-width: 600px; margin: auto; }
+    h1 { 
+      text-align: center; 
+      color: #ff073a; 
+      text-shadow: 0 0 10px #ff073a;
+      margin-bottom: 10px;
+    }
+    .tagline { text-align: center; color: #888; margin-bottom: 30px; }
+    .box {
+      background: #111;
+      border: 1px solid #00ff41;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 15px rgba(0,255,65,0.2);
+    }
+    label { display: block; margin-bottom: 8px; color: #ff073a; }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      border: 1px solid #00ff41;
+      color: #00ff41;
+      font-family: inherit;
+      margin-bottom: 15px;
+      border-radius: 3px;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      background: #ff073a;
+      color: #000;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    button:hover { background: #00ff41; color: #000; }
+    .history { margin-top: 20px; }
+    .history-item {
+      background: #000;
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 3px solid #ff073a;
+      font-size: 14px;
+    }
+    .footer { text-align: center; margin-top: 40px; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ YODHA WA TOOLKIT ⚡</h1>
+    <p class="tagline">Number save kiye bina WhatsApp karo | 100% Free | No Ads</p>
+
+    <div class="box">
+      <label>[1] COUNTRY SELECT KARO</label>
+      <select id="country">
+        <option value="91">🇮🇳 India +91</option>
+        <option value="1">🇺🇸 USA +1</option>
+        <option value="44">🇬🇧 UK +44</option>
+        <option value="971">🇦🇪 UAE +971</option>
+      </select>
+
+      <label>[2] MOBILE NUMBER DAAL</label>
+      <input type="number" id="number" placeholder="9876543210">
+
+      <label>[3] MESSAGE LIKHO - OPTIONAL</label>
+      <textarea id="msg" rows="3" placeholder="Hi, kaise ho?"></textarea>
+
+      <button onclick="openChat()">💬 CHAT START KARO</button>
+    </div>
+
+    <div class="box">
+      <label>[4] BULK LINK GENERATOR</label>
+      <textarea id="bulk" rows="5" placeholder="Ek line me ek number&#10;9876543210&#10;8765432109"></textarea>
+      <button onclick="genBulk()">🔗 SABKI LINK BANAO</button>
+      <div id="bulkResult"></div>
+    </div>
+
+    <div class="box history">
+      <label>[5] TERI RECENT CHATS</label>
+      <div id="historyList">Abhi koi history nahi hai...</div>
+      <button onclick="clearHistory()" style="background:#333;color:#ff073a;margin-top:10px">History Clear Karo</button>
+    </div>
+
+    <div class="footer">
+      Made by Yodha 💀 | No data stored on server | 100% Private
+    </div>
+  </div>
+
+  <script>
+    // Load history on page load
+    showHistory();
+
+    function openChat() {
+      let country = document.getElementById('country').value;
+      let num = document.getElementById('number').value;
+      let msg = document.getElementById('msg').value;
+      
+      if(num.length < 10) {
+        alert('Bhai sahi number daal 10 digit ka');
+        return;
+      }
+      
+      let link = `https://wa.me/${country}${num}`;
+      if(msg) link += `?text=${encodeURIComponent(msg)}`;
+      
+      saveHistory(country+num);
+      window.open(link, '_blank');
+    }
+
+    function genBulk() {
+      let nums = document.getElementById('bulk').value.split('\n');
+      let country = document.getElementById('country').value;
+      let result = '';
+      
+      nums.forEach(n => {
+        n = n.trim();
+        if(n.length >= 10) {
+          let link = `https://wa.me/${country}${n}`;
+          result += `<div class="history-item">${n} → <a href="${link}" target="_blank" style="color:#00ff41">Chat Karo</a></div>`;
+        }
+      });
+      
+      document.getElementById('bulkResult').innerHTML = result || 'Koi valid number nahi mila';
+    }
+
+    function saveHistory(num) {
+      let hist = JSON.parse(localStorage.getItem('yodhaWA') || '[]');
+      hist.unshift(num);
+      hist = hist.slice(0, 5); // Last 5 only
+      localStorage.setItem('yodhaWA', JSON.stringify(hist));
+      showHistory();
+    }
+
+    function showHistory() {
+      let hist = JSON.parse(localStorage.getItem('yodhaWA') || '[]');
+      let html = '';
+      hist.forEach(n => {
+        html += `<div class="history-item">+${n} <a href="https://wa.me/${n}" target="_blank" style="color:#00ff41;float:right">Chat Again</a></div>`;
+      });
+      document.getElementById('historyList').innerHTML = html || 'Abhi koi history nahi hai...';
+    }
+
+    function clearHistory() {
+      localStorage.removeItem('yodhaWA');
+      showHistory();
+    }
+  </script>
+</body>
+</html>
